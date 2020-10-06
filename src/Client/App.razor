@@ -1,11 +1,28 @@
-# LazyAssemblyLoader bug report repo
-Demo repository for a bug report of LazyAssemblyLoader (aspnet core 5 RC 1)
+@using System.Reflection
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.WebAssembly.Services
 
-### Description
-The app should lazy load <b>Newtonsoft.Json.dll</b> on navigation to page <b>"Newtonsoft lazy"</b> and it should load <b>LazyAssemblyLoaderBugReport.MyLazy.dll</b> on navigation to page <b>"My lazy"</b>.
+@inject LazyAssemblyLoader assemblyLoader
+@inject IJSRuntime jsRuntime
 
-<code>
-    
+<Router AppAssembly="@typeof(Program).Assembly"
+        AdditionalAssemblies="@lazyLoadedAssemblies" OnNavigateAsync="@OnNavigateAsync">
+    <Navigating>
+        <div style="padding:20px;background-color:blue;color:white">
+            <p>Loading the requested page&hellip;</p>
+        </div>
+    </Navigating>
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p>Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
     private List<Assembly> lazyLoadedAssemblies = new List<Assembly>();
 
     private async Task OnNavigateAsync(NavigationContext args)
@@ -32,22 +49,4 @@ The app should lazy load <b>Newtonsoft.Json.dll</b> on navigation to page <b>"Ne
             await jsRuntime.InvokeVoidAsync("alert", ex.Message);
         }
     }
-    
-</code>
-
-If you run the app and hit first the nav entry <b>"Newtonsoft lazy"</b>, everything runs as expected and returns the <b>Newtonsoft.Json</b> assembly.
-
-![Image of Newton](https://github.com/hevelmann/LazyAssemblyLoaderBugReport/blob/main/img/screen1.png)
-
-But if you hit nav entry <b>"My lazy"</b> after hitting <b>"Newtonsoft lazy"</b> it does not run as expected. 
-
-It should return the <b>LazyAssemblyLoaderBugReport.MyLazy</b> assembly but it returns the <b>Newtonsoft.Json</b> assembly.
-
-The <b>LazyAssemblyLoaderBugReport.MyLazy.dll</b> was loaded from the server (see network tab in the browser) but it was not returned by the LazyAssemblyLoader.
-
-![Image of Newton](https://github.com/hevelmann/LazyAssemblyLoaderBugReport/blob/main/img/screen2.png)
-
-
-I hope this helps.
-
-
+}
