@@ -4,6 +4,8 @@ Demo repository for a bug report of LazyAssemblyLoader (aspnet core 5 RC 1)
 ### Description
 The app should lazy load <b>Newtonsoft.Json.dll</b> on navigation to page <b>"Newtonsoft lazy"</b> and it should load <b>LazyAssemblyLoaderBugReport.MyLazy.dll</b> on navigation to page <b>"My lazy"</b>.
 
+The OnNavigateAsync method in App.razor:
+
 <code>
     
     private List<Assembly> lazyLoadedAssemblies = new List<Assembly>();
